@@ -6,7 +6,7 @@
 #define CHIP8EMU_DISPLAY_H
 
 #include <cstdint>
-#include "SDL2/sdl.h"
+#include "SDL2/SDL.h"
 
 class Display {
 private:
@@ -17,7 +17,7 @@ public:
     Display();
 
     void Clear();
-    void Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count);
+    uint16_t Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count);
     void Render();
 
     ~Display();

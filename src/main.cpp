@@ -1,11 +1,11 @@
 #include <iostream>
-#include "../headers/Memory.h"
-#include "../headers/Display.h"
+#include "../headers/CPU.h"
 
 int main() {
-    Display *dsp = new Display;
-    Memory *mem = new Memory;
-    dsp->Draw(1, 1, (uint8_t *) mem->GetPtr(0x50), 5);
-    int x;
-    std::cin >> x;
+    srand(time(nullptr));
+    auto *dsp = new Display;
+    auto *mem = new Memory;
+    mem->LoadRom("/home/alx/CLionProjects/Chip8Emu/chip8-test-suite.ch8");
+    auto *cpu = new CPU(dsp, mem);
+    cpu->Run();
 }

@@ -3,3 +3,15 @@
 //
 
 #include "../headers/CPU.h"
+
+CPU::CPU(Display *dsp, Memory *mem){
+    display = dsp;
+    memory = mem;
+
+}
+
+void CPU::Run(){
+    while(!paused){
+        Execute();
+    }
+}

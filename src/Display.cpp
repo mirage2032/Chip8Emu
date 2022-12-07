@@ -3,29 +3,39 @@
 //
 
 #include "../headers/Display.h"
-
-
+#define WIDTH 64
+#define HEIGHT 32
+#define SCALE 10
 Display::Display() {
     pixels = new bool[64 * 32];
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_CreateWindowAndRenderer(64, 32, 0, &window, &renderer);
+    SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
 
-    SDL_RenderSetScale(renderer, 2, 2);
-    SDL_SetWindowSize(window, 128, 64);
+    SDL_RenderSetScale(renderer, SCALE, SCALE);
+    SDL_SetWindowSize(window, WIDTH*SCALE, HEIGHT*SCALE);
+    Clear();
 }
 
 void Display::Clear() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
 }
 
-void Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count) {
+uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count) {
+    uint16_t vf = 0;
     for (int curyoffset = 0; curyoffset < count; curyoffset++) {
         for (int curxoffset = 0; curxoffset < 8; curxoffset++) {
-            bool *current_pixel = &pixels[x + curxoffset + 64 * (y + curyoffset)];
-            *current_pixel = memloc[curyoffset] & (1 << (8 - curxoffset)); //set pixel
+            bool *current_pixel = &pixels[((x + curxoffset)%64) + 64 * ((y + curyoffset)%32)];
+            if(memloc[curyoffset] & (1 << (7 - curxoffset))) {
+                if (*current_pixel)
+                    vf = 1;
+                *current_pixel = !*current_pixel;
+            }
         }
     }
+    Render();
+    return vf;
 }
 
 void Display::Render() {
@@ -37,6 +47,7 @@ void Display::Render() {
                 SDL_RenderDrawPoint(renderer, x, y);
         }
     }
+    SDL_RenderPresent(renderer);
 }
 
 Display::~Display() {

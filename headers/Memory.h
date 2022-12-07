@@ -5,7 +5,7 @@
 #ifndef CHIP8EMU_MEMORY_H
 #define CHIP8EMU_MEMORY_H
 
-#include "cstdint"
+#include <fstream>
 
 class Memory {
 private:
@@ -13,9 +13,10 @@ private:
 public:
     Memory();
 
-    void Set(uint16_t pos,uint8_t val);
-    void Set(uint16_t pos,uint16_t val);
+    void Set8(uint16_t pos,uint8_t val);
+    void Set16(uint16_t pos,uint16_t val);
     uint16_t Get(uint16_t pos);
+    void LoadRom(const char* rom_path);
     void* GetPtr(uint16_t pos);
     ~Memory();
 

@@ -7,8 +7,8 @@
 
 Memory::Memory() {
     mem = new uint8_t[4096];
-
-    //FONT starting at 0x50, ending at 0x9f
+    memset(mem,0,4096);
+    //DEFAULT HEX FONT starting at 0x50, ending at 0x9f
     uint8_t characters[] = {0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
                             0x20, 0x60, 0x20, 0x20, 0x70, // 1
                             0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -29,11 +29,11 @@ Memory::Memory() {
     std::memcpy(&mem[0x50],characters,80);
 }
 
-void Memory::Set(uint16_t pos, uint8_t val) {
+void Memory::Set8(uint16_t pos, uint8_t val) {
     mem[pos] = val;
 }
 
-void Memory::Set(uint16_t pos, uint16_t val) {
+void Memory::Set16(uint16_t pos, uint16_t val) {
     *((uint16_t *) &(mem[pos])) = val;
 }
 
@@ -43,6 +43,16 @@ uint16_t Memory::Get(uint16_t pos) {
 
 void *Memory::GetPtr(uint16_t pos) {
     return &(mem[pos]);
+}
+
+void Memory::LoadRom(const char* rom_path) {
+    std::ifstream file;
+    file.open(rom_path,std::ios_base::binary);
+    file.seekg(0,std::ios::end);
+    size_t size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    file.read(reinterpret_cast<char*>(&mem[0x200]),size);
+    file.close();
 }
 
 Memory::~Memory() {
