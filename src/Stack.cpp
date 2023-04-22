@@ -23,7 +23,7 @@ uint16_t Stack::Pop() {
         abort(); //TODO except handler
     }
     current_size--;
-    return stack[current_size+1];
+    return stack[current_size];
 }
 
 Stack::~Stack() {
