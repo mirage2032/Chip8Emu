@@ -47,11 +47,21 @@ void *Memory::GetPtr(uint16_t pos) {
 
 void Memory::LoadRom(const char* rom_path) {
     std::ifstream file;
-    file.open(rom_path,std::ios_base::binary);
-    file.seekg(0,std::ios::end);
+    file.open(rom_path, std::ios_base::binary);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to open ROM file.");
+    }
+
+    file.seekg(0, std::ios::end);
     size_t size = file.tellg();
     file.seekg(0, std::ios::beg);
-    file.read(reinterpret_cast<char*>(&mem[0x200]),size);
+
+    if (!file.read(reinterpret_cast<char*>(&mem[0x200]), size)) {
+        file.close();
+        throw std::runtime_error("Failed to read ROM file.");
+    }
+
     file.close();
 }
 

@@ -6,6 +6,7 @@
 #define CHIP8EMU_MEMORY_H
 
 #include <fstream>
+#include <cstdint>
 
 class Memory {
 private:

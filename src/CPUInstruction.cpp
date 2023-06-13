@@ -143,16 +143,16 @@ void CPU::Execute() {
                 case 0x33: //LD B, Vx
                     tmp = registers[vx];
                     memory->Set8(i + 2, tmp % 10);
-                    tmp / 10;
+                    tmp /= 10;
                     memory->Set8(i + 1, tmp % 10);
-                    tmp / 10;
+                    tmp /= 10;
                     memory->Set8(i, tmp % 10);
                     break;
                 case 0x55: //LD [I], Vx
-                    memcpy(memory->GetPtr(i), registers, vx);
+                    memcpy(memory->GetPtr(i), registers, vx+1);
                     break;
                 case 0x65: //LD Vx, [I]
-                    memcpy(registers, memory->GetPtr(i), vx);
+                    memcpy(registers, memory->GetPtr(i), vx+1);
                     break;
                 default:
                     std::cout << std::hex<< instr << " ERROR:\n";
