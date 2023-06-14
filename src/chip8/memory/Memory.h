@@ -14,11 +14,9 @@ private:
 public:
     Memory();
 
-    void Set8(uint16_t pos,uint8_t val);
-    void Set16(uint16_t pos,uint16_t val);
-    uint16_t Get(uint16_t pos);
+    void Set(uint16_t pos, uint8_t val);
     void LoadRom(const char* rom_path);
-    void* GetPtr(uint16_t pos);
+    void* Get(uint16_t pos);
     ~Memory();
 
 };

@@ -2,7 +2,7 @@
 // Created by alx on 07.12.2022.
 //
 
-#include "../headers/Stack.h"
+#include "stack.h"
 
 Stack::Stack() {
     stack = (uint16_t*)malloc(max_size*sizeof(uint16_t));

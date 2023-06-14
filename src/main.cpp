@@ -1,11 +1,11 @@
 #include <iostream>
-#include "../headers/CPU.h"
+#include "chip8/cpu/cpu.h"
 
 int main() {
     srand(time(nullptr));
-    auto *dsp = new Display;
+    auto *dsp = new Io;
     auto *mem = new Memory;
-    mem->LoadRom("/home/alx/CLionProjects/Chip8Emu/testroms/3-corax+.ch8");
-    auto *cpu = new CPU(dsp, mem);
+    mem->LoadRom("../testroms/4-flags.ch8");
+    auto *cpu = new Cpu(dsp, mem);
     cpu->Run();
 }

@@ -3,7 +3,7 @@
 //
 
 #include <cstring>
-#include "../headers/Memory.h"
+#include "Memory.h"
 
 Memory::Memory() {
     mem = new uint8_t[4096];
@@ -29,19 +29,11 @@ Memory::Memory() {
     std::memcpy(&mem[0x50],characters,80);
 }
 
-void Memory::Set8(uint16_t pos, uint8_t val) {
+void Memory::Set(uint16_t pos, uint8_t val) {
     mem[pos] = val;
 }
 
-void Memory::Set16(uint16_t pos, uint16_t val) {
-    *((uint16_t *) &(mem[pos])) = val;
-}
-
-uint16_t Memory::Get(uint16_t pos) {
-    return *((uint16_t *) &(mem[pos]));
-}
-
-void *Memory::GetPtr(uint16_t pos) {
+void *Memory::Get(uint16_t pos) {
     return &(mem[pos]);
 }
 

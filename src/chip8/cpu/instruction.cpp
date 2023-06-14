@@ -2,11 +2,21 @@
 // Created by alx on 07.12.2022.
 //
 
-#include "../headers/CPU.h"
+#include "cpu.h"
 #include "iostream"
 
-void CPU::Execute() {
-    auto *instruction = (uint16_t *) memory->GetPtr(pc);
+void printUnknownInstruction(uint16_t instruction) {
+    std::cout << std::hex << instruction << " ERROR\n";
+}
+
+uint8_t checkCarry(uint32_t val) {
+    if (val > 0xFF)
+        return 1;
+    return 0;
+}
+
+void Cpu::Execute() {
+    auto *instruction = (uint16_t *) memory->Get(pc);
     uint16_t instr = (*instruction >> 8) | (*instruction << 8);
     pc += 2;
     uint32_t tmp;
@@ -20,7 +30,7 @@ void CPU::Execute() {
     switch (instr & 0xF000) {
         case 0x0000:
             if (instr == 0x00E0) //CLS
-                display->Clear();
+                io->display.Clear();
             if (instr == 0x00EE) //RET
                 pc = stack.Pop();
             break;
@@ -61,36 +71,50 @@ void CPU::Execute() {
                     registers[vx] = registers[vx] & registers[vy];
                     break;
                 case 0x3: //XOR Vx, Vy
-                    registers[vx] = registers[vx] ^ registers[vy];
+                    registers[vx] ^= registers[vy];
                     break;
                 case 0x4: //ADD Vx, Vy
                     tmp = registers[vx] + registers[vy];
+                    registers[vx] = tmp;
                     if (tmp > 0xFF)
                         registers[0xF] = 1;
-                    registers[vx] = tmp;
+                    else
+                        registers[0xF] = 0;
                     break;
-                case 0x5: //SUB Vx, Vy
-                    registers[vx] = registers[vx] - registers[vy];
-                    if (registers[vx] > registers[vy])
+                case 0x5: // SUB Vx, Vy
+                    tmp = registers[vx] - registers[vy];
+                    registers[vx] = tmp;
+                    if (tmp > 0xFF)
+                        registers[0xF] = 0;
+                    else
                         registers[0xF] = 1;
                     break;
                 case 0x6: //SHR Vx {, Vy}
                     if (registers[vx] & 0b1)
-                        registers[0xF] = 1;
+                        tmp = 1;
+                    else
+                        tmp = 0;
                     registers[vx] = registers[vx] >> 1;
+                    registers[0xF] = tmp;
                     break;
                 case 0x7: //SUBN Vx, Vy
-                    registers[vx] = registers[vy] - registers[vx];
                     if (registers[vy] > registers[vx])
-                        registers[0xF] = 1;
+                        tmp = 1;
+                    else
+                        tmp = 0;
+                    registers[vx] = registers[vy] - registers[vx];
+                    registers[0xF] = tmp;
                     break;
                 case 0xE: //SHL Vx {, Vy}
-                    if (registers[vx] & 0b1)
-                        registers[0xF] = 1;
+                    if (registers[vx] & 0b10000000) // Check if MSB is 1 (carry condition)
+                        tmp = 1;
+                    else
+                        tmp = 0;
                     registers[vx] = registers[vx] << 1;
+                    registers[0xF] = tmp;
                     break;
                 default:
-                    std::cout<< std::hex << instr << " ERROR\n";
+                    printUnknownInstruction(instr);
             }
             break;
         case 0x9000: //SNE Vx, Vy
@@ -107,17 +131,20 @@ void CPU::Execute() {
             registers[vx] = rand() % 256 & nn;
             break;
         case 0xD000: //DRW Vx, Vy, nibble
-            registers[0xF] = display->Draw(registers[vx], registers[vy], (uint8_t *) memory->GetPtr(i), n);
+            registers[0xF] = io->display.Draw(registers[vx], registers[vy], (uint8_t *) memory->Get(i), n);
             break;
-        case 0xE000://TODO:Input
+        case 0xE000:
             switch (nn) {
                 case 0x9E: //SKP Vx
+                    if (io->events.GetKey(registers[vx]))
+                        pc += 2;
                     break;
                 case 0xA1: //SKNP Vx
-                    pc += 2;
+                    if (!io->events.GetKey(registers[vx]))
+                        pc += 2;
                     break;
                 default:
-                    std::cout << std::hex << instr << " ERROR:\n" ;
+                    printUnknownInstruction(instr);
             }
             break;
         case 0xF000:
@@ -126,14 +153,15 @@ void CPU::Execute() {
                     registers[vx] = del_timer;
                     break;
                 case 0x0A: //LD Vx, K
-                    std::cout << "KEY=";
-                    std::cin >> tmp;
-                    registers[vx] = tmp;
+                    std::cout << "Waiting for keypress" << std::endl;
+                    registers[vx] = io->events.WaitKey();
                     break;
                 case 0x15: //LD DT, Vx
                     del_timer = registers[vx];
+                    break;
                 case 0x18: //LD ST, Vx
                     snd_timer = registers[vx];
+                    break;
                 case 0x1E: //ADD I, Vx
                     i = i + registers[vx];
                     break;
@@ -142,23 +170,23 @@ void CPU::Execute() {
                     break;
                 case 0x33: //LD B, Vx
                     tmp = registers[vx];
-                    memory->Set8(i + 2, tmp % 10);
+                    memory->Set(i + 2, tmp % 10);
                     tmp /= 10;
-                    memory->Set8(i + 1, tmp % 10);
+                    memory->Set(i + 1, tmp % 10);
                     tmp /= 10;
-                    memory->Set8(i, tmp % 10);
+                    memory->Set(i, tmp % 10);
                     break;
                 case 0x55: //LD [I], Vx
-                    memcpy(memory->GetPtr(i), registers, vx+1);
+                    memcpy(memory->Get(i), registers, vx + 1);
                     break;
                 case 0x65: //LD Vx, [I]
-                    memcpy(registers, memory->GetPtr(i), vx+1);
+                    memcpy(registers, memory->Get(i), vx + 1);
                     break;
                 default:
-                    std::cout << std::hex<< instr << " ERROR:\n";
+                    printUnknownInstruction(instr);
             }
             break;
         default:
-            std::cout<< std::hex<< instr << " ERROR:\n";
+            printUnknownInstruction(instr);
     }
 }
