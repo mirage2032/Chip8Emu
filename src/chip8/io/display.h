@@ -15,7 +15,7 @@ private:
 public:
     explicit Display();
     void ClearPixels();
-    uint16_t Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count);
+    uint16_t Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count, bool clipping);
     void Render();
     ~Display();
 };

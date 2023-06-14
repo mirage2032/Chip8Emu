@@ -66,12 +66,15 @@ void Cpu::Execute() {
                     break;
                 case 0x1: //OR Vx, Vy
                     registers[vx] = registers[vx] | registers[vy];
+                    registers[0xF] = 0x0; //Chip-8 quirk vF reset
                     break;
                 case 0x2: //AND Vx, Vy
                     registers[vx] = registers[vx] & registers[vy];
+                    registers[0xF] = 0x0; //Chip-8 quirk vF reset
                     break;
                 case 0x3: //XOR Vx, Vy
                     registers[vx] ^= registers[vy];
+                    registers[0xF] = 0x0; //Chip-8 quirk vF reset
                     break;
                 case 0x4: //ADD Vx, Vy
                     tmp = registers[vx] + registers[vy];
@@ -90,6 +93,7 @@ void Cpu::Execute() {
                         registers[0xF] = 1;
                     break;
                 case 0x6: //SHR Vx {, Vy}
+                    registers[vx]=registers[vy]; //Chip-8 quirk SHIFTING
                     if (registers[vx] & 0b1)
                         tmp = 1;
                     else
@@ -98,7 +102,7 @@ void Cpu::Execute() {
                     registers[0xF] = tmp;
                     break;
                 case 0x7: //SUBN Vx, Vy
-                    if (registers[vy] > registers[vx])
+                    if (registers[vy] > registers[vx]) //Chip-8 quirk SHIFTING
                         tmp = 1;
                     else
                         tmp = 0;
@@ -106,6 +110,7 @@ void Cpu::Execute() {
                     registers[0xF] = tmp;
                     break;
                 case 0xE: //SHL Vx {, Vy}
+                    registers[vx]=registers[vy];
                     if (registers[vx] & 0b10000000) // Check if MSB is 1 (carry condition)
                         tmp = 1;
                     else
@@ -131,7 +136,7 @@ void Cpu::Execute() {
             registers[vx] = rand() % 256 & nn;
             break;
         case 0xD000: //DRW Vx, Vy, nibble
-            registers[0xF] = io->display.Draw(registers[vx], registers[vy], (uint8_t *) memory->Get(i), n);
+            registers[0xF] = io->display.Draw(registers[vx], registers[vy], (uint8_t *) memory->Get(i), n, true);
             break;
         case 0xE000:
             switch (nn) {
@@ -178,9 +183,11 @@ void Cpu::Execute() {
                     break;
                 case 0x55: //LD [I], Vx
                     memcpy(memory->Get(i), registers, vx + 1);
+                    i++; //Chip-8 quirk Memory
                     break;
                 case 0x65: //LD Vx, [I]
                     memcpy(registers, memory->Get(i), vx + 1);
+                    i++; //Chip-8 quirk Memory
                     break;
                 default:
                     printUnknownInstruction(instr);

@@ -32,11 +32,18 @@ void Display::ClearPixels() {
     Render();
 }
 
-uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count) {
+uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count, bool clipping) {
     uint16_t vf = 0;
     for (int curyoffset = 0; curyoffset < count; curyoffset++) {
         for (int curxoffset = 0; curxoffset < 8; curxoffset++) {
-            bool *current_pixel = &pixels[((x + curxoffset) % WIDTH) + WIDTH * ((y + curyoffset) % HEIGHT)];
+
+            // Apply clipping if enabled
+            if (clipping && (x + curxoffset >= WIDTH || y + curyoffset >= HEIGHT))
+                continue;
+
+            int pixelX = (x + curxoffset) % WIDTH;
+            int pixelY = (y + curyoffset) % HEIGHT;
+            bool *current_pixel = &pixels[pixelX + WIDTH * pixelY];
             if (memloc[curyoffset] & (1 << (7 - curxoffset))) {
                 if (*current_pixel)
                     vf = 1;
@@ -51,9 +58,9 @@ uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t coun
 void Display::Render() {
     ClearScreen();
     SDL_SetRenderDrawColor(renderer, PIXEL_COLOR.ON.r, PIXEL_COLOR.ON.g, PIXEL_COLOR.ON.b, PIXEL_COLOR.ON.a);
-    for (int y = 0; y < 32; y++) {
-        for (int x = 0; x < 64; x++) {
-            if (pixels[x + 64 * y])
+    for (int y = 0; y < HEIGHT; y++) {
+        for (int x = 0; x < WIDTH; x++) {
+            if (pixels[x + WIDTH * y])
                 SDL_RenderDrawPoint(renderer, x, y);
         }
     }
