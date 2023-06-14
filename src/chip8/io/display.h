@@ -11,9 +11,10 @@ private:
     bool *pixels;
     SDL_Renderer *renderer = nullptr;
     SDL_Window *window = nullptr;
+    void ClearScreen();
 public:
     explicit Display();
-    void Clear();
+    void ClearPixels();
     uint16_t Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count);
     void Render();
     ~Display();

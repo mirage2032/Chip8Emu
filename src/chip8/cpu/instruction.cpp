@@ -30,7 +30,7 @@ void Cpu::Execute() {
     switch (instr & 0xF000) {
         case 0x0000:
             if (instr == 0x00E0) //CLS
-                io->display.Clear();
+                io->display.ClearPixels();
             if (instr == 0x00EE) //RET
                 pc = stack.Pop();
             break;
@@ -150,14 +150,14 @@ void Cpu::Execute() {
         case 0xF000:
             switch (nn) {
                 case 0x07: //LD Vx, DT
-                    registers[vx] = del_timer;
+                    registers[vx] = del_timer->Get();
                     break;
                 case 0x0A: //LD Vx, K
                     std::cout << "Waiting for keypress" << std::endl;
                     registers[vx] = io->events.WaitKey();
                     break;
                 case 0x15: //LD DT, Vx
-                    del_timer = registers[vx];
+                    del_timer->Set(registers[vx]);
                     break;
                 case 0x18: //LD ST, Vx
                     snd_timer = registers[vx];

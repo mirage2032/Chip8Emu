@@ -12,19 +12,24 @@ constexpr struct {
     SDL_Color OFF = {40, 40, 40, 255};
 } PIXEL_COLOR;
 
+void Display::ClearScreen() {
+    SDL_SetRenderDrawColor(renderer, PIXEL_COLOR.OFF.r, PIXEL_COLOR.OFF.g, PIXEL_COLOR.OFF.b, PIXEL_COLOR.OFF.a);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
+}
+
 Display::Display() {
     pixels = new bool[WIDTH * HEIGHT];
     SDL_Init(SDL_INIT_VIDEO);
     SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer);
     SDL_RenderSetScale(renderer, SCALE, SCALE);
     SDL_SetWindowSize(window, WIDTH * SCALE, HEIGHT * SCALE);
-    Clear();
+    ClearScreen();
 }
 
-void Display::Clear() {
-    SDL_SetRenderDrawColor(renderer, PIXEL_COLOR.OFF.r, PIXEL_COLOR.OFF.g, PIXEL_COLOR.OFF.b, PIXEL_COLOR.OFF.a);
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+void Display::ClearPixels() {
+    memset(pixels,0,WIDTH*HEIGHT);
+    Render();
 }
 
 uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count) {
@@ -44,7 +49,7 @@ uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t coun
 }
 
 void Display::Render() {
-    Clear();
+    ClearScreen();
     SDL_SetRenderDrawColor(renderer, PIXEL_COLOR.ON.r, PIXEL_COLOR.ON.g, PIXEL_COLOR.ON.b, PIXEL_COLOR.ON.a);
     for (int y = 0; y < 32; y++) {
         for (int x = 0; x < 64; x++) {

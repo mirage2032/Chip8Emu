@@ -7,9 +7,8 @@
 
 constexpr int CPU_FREQUENCY = 600;
 
-Cpu::Cpu(Io *dsp, Memory *mem) {
-    io = dsp;
-    memory = mem;
+Cpu::Cpu(Io *io, Memory *memory):io(io), memory(memory) {
+    del_timer = new Timer(60);
 
 }
 
@@ -27,4 +26,8 @@ void Cpu::Run() {
             std::this_thread::sleep_for(remaining_time);
         }
     }
+}
+
+Cpu::~Cpu(){
+    delete del_timer;
 }
