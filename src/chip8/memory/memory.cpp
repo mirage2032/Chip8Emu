@@ -3,11 +3,11 @@
 //
 
 #include <cstring>
-#include "Memory.h"
+#include "memory.h"
 
 Memory::Memory() {
     mem = new uint8_t[4096];
-    memset(mem,0,4096);
+    memset(mem, 0, 4096);
     //DEFAULT HEX FONT starting at 0x50, ending at 0x9f
     uint8_t characters[] = {0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
                             0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -26,7 +26,7 @@ Memory::Memory() {
                             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
                             0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
-    std::memcpy(&mem[0x50],characters,80);
+    std::memcpy(&mem[0x50], characters, 80);
 }
 
 void Memory::Set(uint16_t pos, uint8_t val) {
@@ -37,7 +37,7 @@ void *Memory::Get(uint16_t pos) {
     return &(mem[pos]);
 }
 
-void Memory::LoadRom(const char* rom_path) {
+void Memory::LoadRom(const std::string &rom_path) {
     std::ifstream file;
     file.open(rom_path, std::ios_base::binary);
 
@@ -46,10 +46,10 @@ void Memory::LoadRom(const char* rom_path) {
     }
 
     file.seekg(0, std::ios::end);
-    size_t size = file.tellg();
+    long size = file.tellg();
     file.seekg(0, std::ios::beg);
 
-    if (!file.read(reinterpret_cast<char*>(&mem[0x200]), size)) {
+    if (!file.read(reinterpret_cast<char *>(&mem[0x200]), size)) {
         file.close();
         throw std::runtime_error("Failed to read ROM file.");
     }

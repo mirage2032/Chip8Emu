@@ -15,8 +15,11 @@ public:
     Memory();
 
     void Set(uint16_t pos, uint8_t val);
-    void LoadRom(const char* rom_path);
-    void* Get(uint16_t pos);
+
+    void LoadRom(const std::string &rom_path);
+
+    void *Get(uint16_t pos);
+
     ~Memory();
 
 };

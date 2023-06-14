@@ -8,7 +8,7 @@
 #include <cstdint>
 #include "stack.h"
 #include "../io/io.h"
-#include "../memory/Memory.h"
+#include "../memory/memory.h"
 #include "../timer/timer.h"
 
 class Cpu {
