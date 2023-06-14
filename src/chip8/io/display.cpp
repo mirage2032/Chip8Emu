@@ -28,7 +28,7 @@ Display::Display() {
 }
 
 void Display::ClearPixels() {
-    memset(pixels,0,WIDTH*HEIGHT);
+    memset(pixels, 0, WIDTH * HEIGHT);
     Render();
 }
 

@@ -5,7 +5,7 @@
 #ifndef CHIP8EMU_CPU_H
 #define CHIP8EMU_CPU_H
 
-#include "cstdint"
+#include <cstdint>
 #include "stack.h"
 #include "../io/io.h"
 #include "../memory/Memory.h"

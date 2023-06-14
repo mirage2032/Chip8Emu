@@ -2,11 +2,19 @@
 // Created by alx on 07.12.2022.
 //
 
+#include <iostream>
+#include <random>
 #include "cpu.h"
-#include "iostream"
 
 void printUnknownInstruction(uint16_t instruction) {
     std::cout << std::hex << instruction << " ERROR\n";
+}
+
+uint8_t randuint8(){
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint8_t> dis(0, std::numeric_limits<uint8_t>::max());
+    return dis(gen);
 }
 
 uint8_t checkCarry(uint32_t val) {
@@ -93,7 +101,7 @@ void Cpu::Execute() {
                         registers[0xF] = 1;
                     break;
                 case 0x6: //SHR Vx {, Vy}
-                    registers[vx]=registers[vy]; //Chip-8 quirk SHIFTING
+                    registers[vx] = registers[vy]; //Chip-8 quirk SHIFTING
                     if (registers[vx] & 0b1)
                         tmp = 1;
                     else
@@ -110,7 +118,7 @@ void Cpu::Execute() {
                     registers[0xF] = tmp;
                     break;
                 case 0xE: //SHL Vx {, Vy}
-                    registers[vx]=registers[vy];
+                    registers[vx] = registers[vy];
                     if (registers[vx] & 0b10000000) // Check if MSB is 1 (carry condition)
                         tmp = 1;
                     else
@@ -133,7 +141,7 @@ void Cpu::Execute() {
             pc = nnn + registers[0];
             break;
         case 0xC000: //RND Vx, byte
-            registers[vx] = rand() % 256 & nn;
+            registers[vx] = randuint8() & nn;
             break;
         case 0xD000: //DRW Vx, Vy, nibble
             registers[0xF] = io->display.Draw(registers[vx], registers[vy], (uint8_t *) memory->Get(i), n, true);
@@ -158,7 +166,6 @@ void Cpu::Execute() {
                     registers[vx] = del_timer->Get();
                     break;
                 case 0x0A: //LD Vx, K
-                    std::cout << "Waiting for keypress" << std::endl;
                     registers[vx] = io->events.WaitKey();
                     break;
                 case 0x15: //LD DT, Vx
