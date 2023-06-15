@@ -37,9 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: release
-          name: Release ${{ env.VERSION }}
-          allowUpdates: true
+          tag: ${{ env.VERSION }}
           makeLatest: true
           omitBody: true
           artifacts: ${{ github.workspace }}/build/Chip8Emu
