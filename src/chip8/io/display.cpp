@@ -2,6 +2,7 @@
 // Created by alx on 6/14/23.
 //
 
+#include <cstring>
 #include "display.h"
 
 constexpr uint8_t WIDTH = 64;
@@ -32,8 +33,8 @@ void Display::ClearPixels() {
     Render();
 }
 
-uint16_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count, bool clipping) {
-    uint16_t vf = 0;
+uint8_t Display::Draw(uint8_t x, uint8_t y, const uint8_t *memloc, uint8_t count, bool clipping) {
+    uint8_t vf = 0;
     for (int curyoffset = 0; curyoffset < count; curyoffset++) {
         for (int curxoffset = 0; curxoffset < 8; curxoffset++) {
 
