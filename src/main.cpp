@@ -20,7 +20,7 @@ std::string chooseRom(std::string romsdir) {
         std::cout << "Choose rom: ";
         std::cin >> romindex;
     }
-    return roms[romindex - 1];
+    return roms[romindex - 1].string();
 }
 
 int main() {
