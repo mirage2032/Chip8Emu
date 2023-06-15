@@ -37,7 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: testing
+          tag: release
           name: Release ${{ env.VERSION }}
           allowUpdates: true
           makeLatest: true
