@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cstring>
 #include <random>
 #include "cpu.h"
 
@@ -13,8 +14,8 @@ void printUnknownInstruction(uint16_t instruction) {
 uint8_t randuint8(){
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dis(0, std::numeric_limits<uint8_t>::max());
-    return dis(gen);
+    std::uniform_int_distribution<uint16_t> dis(0, std::numeric_limits<uint8_t>::max());
+    return static_cast<uint8_t>(dis(gen));
 }
 
 uint8_t checkCarry(uint32_t val) {
@@ -30,8 +31,8 @@ void Cpu::Execute() {
     uint32_t tmp;
     uint16_t vx = (instr & 0x0F00) >> 8;
     uint16_t vy = (instr & 0x00F0) >> 4;
-    uint16_t n = instr & 0x000F;
-    uint16_t nn = instr & 0x00FF;
+    uint8_t n = instr & 0x000F;
+    uint8_t nn = instr & 0x00FF;
     uint16_t nnn = instr & 0x0FFF;
 
 

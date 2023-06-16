@@ -1,0 +1,17 @@
+name: Build All
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-lnx:
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      build-type: "Release"
+  build-win:
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      build-type: "Release"

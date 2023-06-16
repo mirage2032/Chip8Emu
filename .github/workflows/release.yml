@@ -1,0 +1,33 @@
+name: Create Release
+
+on:
+  workflow_run:
+    workflows: ["Build All"]
+    types:
+      - completed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Get Version
+        run: echo VERSION=`cat version.txt` >> $GITHUB_ENV
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create and Upload Release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.VERSION }}
+          makeLatest: true
+          omitBody: true
+          artifacts: |
+            ${{ github.workspace }}/Chip8Emu-linux/Chip8Emu
+            ${{ github.workspace }}/Chip8Emu-windows/Chip8Emu.exe
