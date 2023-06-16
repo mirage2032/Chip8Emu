@@ -1,0 +1,32 @@
+name: Build Windows
+
+on:
+  workflow_call:
+    inputs:
+      build-type:
+        required: true
+        type: string
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{ inputs.build-type }}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{ inputs.build-type }}
+
+      - name: Set Executable Path
+        run: echo "EXEC_PATH=${{github.workspace}}/build/Release/Chip8Emu.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Archive Executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chip8Emu-windows
+          path: ${{ env.EXEC_PATH }}
