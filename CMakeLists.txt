@@ -9,28 +9,11 @@ set(SDL2_SOURCE_DIR "dep/SDL")
 # Build SDL from source
 add_subdirectory(${SDL2_SOURCE_DIR} ${SDL2_BINARY_DIR})
 
-include_directories(
-        "${SDL2_SOURCE_DIR}/include"
-)
+include_directories("${SDL2_SOURCE_DIR}/include")
 
-add_executable(Chip8Emu
-        src/main.cpp
-        src/chip8/cpu/cpu.cpp
-        src/chip8/cpu/cpu.h
-        src/chip8/memory/memory.cpp
-        src/chip8/memory/memory.h
-        src/chip8/io/io.cpp
-        src/chip8/io/io.h
-        src/chip8/cpu/stack.cpp
-        src/chip8/cpu/stack.h
-        src/chip8/cpu/instruction.cpp
-        src/chip8/io/display.cpp
-        src/chip8/io/display.h
-        src/chip8/io/events.cpp
-        src/chip8/io/events.h
-        src/chip8/timer/timer.cpp
-        src/chip8/timer/timer.h
-        )
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/*.h")
+
+add_executable(Chip8Emu ${SOURCES})
 
 add_definitions(-DSDL_MAIN_HANDLED)
 
