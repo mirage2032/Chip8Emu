@@ -18,7 +18,12 @@ std::string chooseRom(std::string romsdir) {
     unsigned int romindex = 0;
     while (romindex == 0 || romindex > roms.size()) {
         std::cout << "Choose rom: ";
-        std::cin >> romindex;
+        if(!(std::cin >> romindex))
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Discard the invalid input
+            std::cout << "Invalid input. Please enter a valid integer." << std::endl;
+        }
     }
     return roms[romindex - 1].string();
 }

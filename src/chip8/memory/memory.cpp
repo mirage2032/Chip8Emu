@@ -46,7 +46,7 @@ void Memory::LoadRom(const std::string &rom_path) {
     }
 
     file.seekg(0, std::ios::end);
-    long size = file.tellg();
+    std::streamoff size = file.tellg();
     file.seekg(0, std::ios::beg);
 
     if (!file.read(reinterpret_cast<char *>(&mem[0x200]), size)) {
